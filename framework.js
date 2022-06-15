@@ -33,7 +33,7 @@ window.onload = () => {
     let parser = new RSSParser();
     // 解析RSS
     parser.parseURL(rssAddr, function (err, feed) {
-      //   错误处理
+      // 错误处理
       if (err) throw err;
       // 大标题
       {
@@ -44,7 +44,7 @@ window.onload = () => {
         // 创建链接
         {
           let link = document.createElement("a");
-          link.innerText = feed.title;
+          link.innerText = feed.title.replace(/^\n\s*|\n\s*$/g, "");
           link.setAttribute("href", feed.link);
           element.appendChild(link);
         }
@@ -58,7 +58,7 @@ window.onload = () => {
         // 标题标记
         element.className = "blogDescription";
         // 加入内容
-        element.innerText = feed.title;
+        element.innerText = feed.description.replace(/^\n\s*|\n\s*$/g, "");
         // 加入
         header.appendChild(element);
       }
@@ -77,7 +77,7 @@ window.onload = () => {
           // 创建链接
           {
             let link = document.createElement("a");
-            link.innerText = entry.title;
+            link.innerText = entry.title.replace(/^\n\s*|\n\s*$/g, "");
             link.setAttribute("href", entry.link);
             element.appendChild(link);
           }
@@ -102,7 +102,7 @@ window.onload = () => {
           // 作者
           {
             let creator = document.createElement("span");
-            creator.innerText = entry.creator;
+            creator.innerText = entry.creator.replace(/^\n\s*|\n\s*$/g, "");
             element.appendChild(creator);
           }
           // 加入
