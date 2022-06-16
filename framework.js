@@ -21,7 +21,9 @@ window.onload = () => {
       .then((val) => {
         const converter = new showdown.Converter();
         content.innerHTML = converter.makeHtml(val);
-        buildPage(document.querySelector(container + ">#content>h1").innerText);
+        const blogTitle = document.querySelector(container + ">#content>h1");
+        buildPage(blogTitle.innerText);
+        blogTitle.remove();
       });
   } else {
     // 主页
@@ -35,22 +37,8 @@ window.onload = () => {
     parser.parseURL(rssAddr, function (err, feed) {
       // 错误处理
       if (err) throw err;
-      // 大标题
-      {
-        // 创建元素
-        let element = document.createElement("h1");
-        // 标题标记
-        element.className = "blogTitle";
-        // 创建链接
-        {
-          let link = document.createElement("a");
-          link.innerText = feed.title.replace(/^\n\s*|\n\s*$/g, "");
-          link.setAttribute("href", feed.link);
-          element.appendChild(link);
-        }
-        // 加入
-        header.appendChild(element);
-      }
+      // 前置处理
+      buildPage();
       // 副标题/描述
       if (feed.title !== feed.description && feed.description) {
         // 创建元素
@@ -122,23 +110,41 @@ window.onload = () => {
         //   加入项目
         content.appendChild(item);
       });
-      buildPage();
     });
   }
 };
 
 function buildPage(pageTitle = null) {
+  // 加载文件
   fetch("/cfg.json")
+    // json处理
     .then((payload) => {
       return payload.json();
     })
     .then((val) => {
+      // 准备元素
       const title = document.querySelector("title");
+      const header = document.querySelector("div#container>header");
+      // 准备大标题
+      let element = document.createElement("h1");
+      // 标题标记
+      element.className = "blogTitle";
+      // 创建链接
+      let link = document.createElement("a");
+      // 设置内容
       if (pageTitle) {
+        link.innerText = pageTitle;
         title.innerText = `${pageTitle} - ${val.title}`;
       } else {
+        link.innerText = val.title;
         title.innerText = val.title;
       }
+      // 设置地址
+      link.setAttribute("href", window.location);
+      // 加入元素
+      element.appendChild(link);
+      header.appendChild(element);
+      // 底部版权
       document.querySelector("span#copyright").innerHTML = val.copyright;
     });
 }
